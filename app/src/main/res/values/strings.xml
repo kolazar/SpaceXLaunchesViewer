@@ -2,7 +2,7 @@
     <string name="app_name">SpaceXDataViewer</string>
     <string name="nameTextView">Name</string>
     <string name="descriptionTextView">Description details</string>
-    <string name="search">Get data</string>
+    <string name="getData">Get data</string>
     <string name="no_launches">No launches</string>
     <string name="error">Some error happened during the list loading</string>
 </resources>

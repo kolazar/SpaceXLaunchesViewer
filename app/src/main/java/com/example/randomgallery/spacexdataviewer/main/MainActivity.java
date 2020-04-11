@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.randomgallery.spacexdataviewer.R;
+import com.example.randomgallery.spacexdataviewer.details.DetailsActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,18 +48,26 @@ public class MainActivity extends AppCompatActivity {
             progress.setVisibility(toVisibility(state.isShowProgress()));
             emptyTextView.setVisibility(toVisibility(state.isShowEmptyHint()));
             errorTextView.setVisibility(toVisibility(state.isShowError()));
+
+            adapter.setLaunches(state.getLaunches());
         });
 
         getButton.setOnClickListener(v->{
             viewModel.getLaunches();
         });
+
+        initLaunchesList();
     }
 
     private void initLaunchesList(){
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         launchesList.setLayoutManager(layoutManager);
 
-        adapter = new LaunchesAdapter();
+        adapter = new LaunchesAdapter(launch -> {
+            Intent intent = new Intent(this, DetailsActivity.class);
+            intent.putExtra(DetailsActivity.EXTRA_REPOSITORY_ID, launch.getFlightNumber());
+            startActivity(intent);
+        });
 
         launchesList.setAdapter(adapter);
     }

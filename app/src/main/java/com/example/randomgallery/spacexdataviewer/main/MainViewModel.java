@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel;
 import com.example.randomgallery.spacexdataviewer.model.Launch;
 import com.example.randomgallery.spacexdataviewer.model.Result;
 
+
+import java.util.Arrays;
 import java.util.List;
 
 import static com.example.randomgallery.spacexdataviewer.model.Result.Status.EMPTY;
@@ -21,7 +23,20 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<ViewState> stateLiveData = new MutableLiveData<>();
 
     {
-        updateViewState(Result.loading());
+        updateViewState(Result.success(Arrays.asList(
+                new Launch(1,"Falcon","2020-04-11",
+                        "The rocket was launched successfully"),
+        new Launch(2,"Falcon","2020-04-11",
+                "The rocket was launched successfully"),
+        new Launch(3,"Falcon","2020-04-11",
+                "The rocket was launched successfully"),
+        new Launch(4,"Falcon","2020-04-11",
+                "The rocket was launched successfully"),
+        new Launch(5,"Falcon","2020-04-11",
+                "The rocket was launched successfully"),
+        new Launch(6,"Falcon","2020-04-11",
+                "The rocket was launched successfully")
+        )));
     }
 
     public LiveData<ViewState> getViewState() {
