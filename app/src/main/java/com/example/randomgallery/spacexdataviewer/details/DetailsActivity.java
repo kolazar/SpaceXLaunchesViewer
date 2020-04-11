@@ -5,14 +5,16 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
+import com.example.randomgallery.spacexdataviewer.App;
 import com.example.randomgallery.spacexdataviewer.R;
 
-public class DetailsActivity extends Activity {
+public class DetailsActivity extends AppCompatActivity {
 
-    public static final String EXTRA_REPOSITORY_ID = "REPOSITORY_ID";
+    public static final String EXTRA_LAUNCH_ID = "LAUNCH_ID";
 
     private TextView nameTextView;
     private TextView descriptionTextView;
@@ -27,12 +29,13 @@ public class DetailsActivity extends Activity {
         nameTextView = findViewById(R.id.nameTextView);
         descriptionTextView = findViewById(R.id.descriptionTextView);
 
-        long repositoryId = getIntent().getLongExtra(EXTRA_REPOSITORY_ID,-1);
+        long repositoryId = getIntent().getLongExtra(EXTRA_LAUNCH_ID,-1);
         if(repositoryId == -1){
             throw new RuntimeException(("There is no repository ID"));
         }
 
-        ViewModelProvider viewModelProvider = new ViewModelProvider((ViewModelStoreOwner) this);
+        App app = (App) getApplication();
+        ViewModelProvider viewModelProvider = new ViewModelProvider(this,app.getViewModelFactory());
         viewModel = viewModelProvider.get(DetailsViewModel.class);
     }
 }

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.randomgallery.spacexdataviewer.App;
 import com.example.randomgallery.spacexdataviewer.R;
 import com.example.randomgallery.spacexdataviewer.details.DetailsActivity;
 
@@ -39,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
          emptyTextView = findViewById(R.id.emptyTextView);
          errorTextView = findViewById(R.id.errorTextView);
 
-        ViewModelProvider viewModelProvider = new ViewModelProvider((ViewModelStoreOwner) this);
+        App app = (App) getApplication();
+         ViewModelProvider viewModelProvider = new ViewModelProvider(this,app.getViewModelFactory());
         viewModel = viewModelProvider.get(MainViewModel.class);
 
         viewModel.getViewState().observe(this,state ->{
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new LaunchesAdapter(launch -> {
             Intent intent = new Intent(this, DetailsActivity.class);
-            intent.putExtra(DetailsActivity.EXTRA_REPOSITORY_ID, launch.getFlightNumber());
+            intent.putExtra(DetailsActivity.EXTRA_LAUNCH_ID, launch.getFlightNumber());
             startActivity(intent);
         });
 
