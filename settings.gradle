@@ -1,0 +1,2 @@
+rootProject.name='SpaceXDataViewer'
+include ':app'
