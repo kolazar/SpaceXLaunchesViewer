@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
 
+    private LaunchesAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
     private void initLaunchesList(){
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         launchesList.setLayoutManager(layoutManager);
-        launchesList.setAdapter();
+
+        adapter = new LaunchesAdapter();
+
+        launchesList.setAdapter(adapter);
     }
 
     static int toVisibility(boolean show){
