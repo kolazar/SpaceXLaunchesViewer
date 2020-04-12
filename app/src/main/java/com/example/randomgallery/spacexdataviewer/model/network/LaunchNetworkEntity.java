@@ -5,7 +5,7 @@ import java.util.Date;
 public class LaunchNetworkEntity {
     private  long flight_number;
     private  String mission_name;
-    private  Date launch_date_utc;
+    private  String launch_date_utc;
     private  String details;
 
     public long getFlight_number() {
@@ -16,7 +16,7 @@ public class LaunchNetworkEntity {
         return mission_name;
     }
 
-    public Date getLaunch_date_utc() {
+    public String getLaunch_date_utc() {
         return launch_date_utc;
     }
 

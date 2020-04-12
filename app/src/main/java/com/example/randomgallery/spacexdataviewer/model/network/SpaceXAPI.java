@@ -1,7 +1,5 @@
 package com.example.randomgallery.spacexdataviewer.model.network;
 
-import java.time.Year;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 

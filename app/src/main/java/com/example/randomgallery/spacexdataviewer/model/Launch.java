@@ -1,5 +1,6 @@
 package com.example.randomgallery.spacexdataviewer.model;
 
+import com.example.randomgallery.spacexdataviewer.model.db.LaunchDBEntity;
 import com.example.randomgallery.spacexdataviewer.model.network.LaunchNetworkEntity;
 
 import java.text.DateFormat;
@@ -9,22 +10,22 @@ import java.util.Date;
 public class Launch {
     private final long flightNumber;
     private final String missionName;
-    private final Date launchDate;
+    private final String launchDate;
     private final String details;
 
-    public Launch(long flightNumber, String missionName, Date launchDate, String details) {
+    public Launch(long flightNumber, String missionName, String launchDate, String details) {
         this.flightNumber = flightNumber;
         this.missionName = missionName;
         this.launchDate = launchDate;
         this.details = details;
     }
 
-    public Launch(LaunchNetworkEntity entity){
+    public Launch(LaunchDBEntity entity){
         this(
-            entity.getFlight_number(),
-            entity.getMission_name(),
-            entity.getLaunch_date_utc(),
-            entity.getDetails()
+            entity.getId(),
+            entity.getMissionName(),
+            entity.getLaunchDate(),
+            entity.getDescription()
         );
     }
 
@@ -37,10 +38,7 @@ public class Launch {
     }
 
     public String getLaunchDate() {
-        String pattern = "MM/dd/yyyy";
-        DateFormat df = new SimpleDateFormat(pattern);
-        String dateAsString = df.format(launchDate);
-        return dateAsString;
+        return launchDate;
     }
 
     public String getDetails() {

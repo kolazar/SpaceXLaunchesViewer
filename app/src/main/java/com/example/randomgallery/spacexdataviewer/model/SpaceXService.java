@@ -2,80 +2,110 @@ package com.example.randomgallery.spacexdataviewer.model;
 
 import com.annimon.stream.Stream;
 import com.example.randomgallery.spacexdataviewer.logger.Logger;
+import com.example.randomgallery.spacexdataviewer.model.db.LaunchDBEntity;
+import com.example.randomgallery.spacexdataviewer.model.db.LaunchDao;
 import com.example.randomgallery.spacexdataviewer.model.network.LaunchNetworkEntity;
 import com.example.randomgallery.spacexdataviewer.model.network.SpaceXAPI;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
-import retrofit2.Call;
 import retrofit2.Response;
 
 public class SpaceXService {
 
+    private ExecutorService executorService;
+    private LaunchDao launchDao;
     private SpaceXAPI spaceXAPI;
     private Logger logger;
 
-    public SpaceXService(SpaceXAPI spaceXAPI, Logger logger) {
+    public SpaceXService(SpaceXAPI spaceXAPI, LaunchDao launchDao,ExecutorService executorService,
+                         Logger logger) {
         this.spaceXAPI = spaceXAPI;
+        this.launchDao = launchDao;
+        this.executorService = executorService;
         this.logger = logger;
     }
 
     public Cancellable getLaunches(Callback<List<Launch>> callback){
 
-        Calendar cal = Calendar.getInstance();
-        Date today = cal.getTime();
-        cal.add(Calendar.YEAR,-5);
-        Date fiveYearsFromToday = cal.getTime();
+        Future<?> future = executorService.submit(()->{
 
-        Call<List<LaunchNetworkEntity>> call = spaceXAPI.getLaunches(fiveYearsFromToday,today);
-        call.enqueue(new retrofit2.Callback<List<LaunchNetworkEntity>>() {
-            @Override
-            public void onResponse(Call<List<LaunchNetworkEntity>> call, Response<List<LaunchNetworkEntity>> response) {
-                if(response.isSuccessful()){
-                    List<LaunchNetworkEntity> entities = response.body();
-                    callback.onResults(convertToLaunches(entities));
-                }else {
-                    RuntimeException exception = new RuntimeException("Error!");
-                    logger.e(exception);
-                    callback.onError(exception);
+                List<LaunchDBEntity> entities = launchDao.getLaunches();
+                List<Launch> launches = convertToLaunches(entities);
+                callback.onResults(launches);
+
+                Calendar cal = Calendar.getInstance();
+                Date today = cal.getTime();
+                cal.add(Calendar.YEAR, -5);
+                Date fiveYearsFromToday = cal.getTime();
+
+            Response<List<LaunchNetworkEntity>> response = null;
+            try {
+                response = spaceXAPI.getLaunches(fiveYearsFromToday,
+                        today).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(response.isSuccessful()){
+                    List<LaunchDBEntity> newDbLaunches = networkToDbEntities(response.body());
+                    launchDao.updateLaunches(newDbLaunches);
+                    callback.onResults(convertToLaunches(newDbLaunches));
+                } else{
+                    if(!launches.isEmpty()){
+                        RuntimeException exception = new RuntimeException("Something happened");
+                        logger.e(exception);
+                        callback.onError(exception);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<LaunchNetworkEntity>> call, Throwable t) {
-                logger.e(t);
-                callback.onError(t);
-            }
+//            catch (Exception e){
+//                logger.e(e);
+//                callback.onError(e);
+//            }
         });
-        return call::cancel;
+
+        return new FutureCancellable(future);
     }
 
     public Cancellable getLaunchById(long id, Callback<Launch> callback){
-        Call<LaunchNetworkEntity> call = spaceXAPI.getLaunchById(id);
-        call.enqueue(new retrofit2.Callback<LaunchNetworkEntity>() {
-            @Override
-            public void onResponse(Call<LaunchNetworkEntity> call, Response<LaunchNetworkEntity> response) {
-                if(response.isSuccessful()){
-                    callback.onResults(new Launch(response.body()));
-                }else{
-                    RuntimeException exception = new RuntimeException("Error!");
-                    logger.e(exception);
-                    callback.onError(exception);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<LaunchNetworkEntity> call, Throwable t) {
-                logger.e(t);
-                callback.onError(t);
+        Future<?> future = executorService.submit(()->{
+            try{
+                LaunchDBEntity dbEntity = launchDao.getById(id);
+                Launch launch = new Launch(dbEntity);
+                callback.onResults(launch);
+            }catch(Exception e){
+                logger.e(e);
+                callback.onError(e);
             }
         });
-        return call::cancel;
+        return new FutureCancellable(future);
     }
 
-    private List<Launch> convertToLaunches(List<LaunchNetworkEntity> entities){
+    private List<Launch> convertToLaunches(List<LaunchDBEntity> entities){
         return Stream.of(entities).map(Launch::new).toList();
+    }
+
+    private List<LaunchDBEntity> networkToDbEntities(List<LaunchNetworkEntity> entities){
+        return Stream.of(entities)
+                .map(networkEntity -> new LaunchDBEntity(networkEntity))
+                .toList();
+    }
+
+    static class FutureCancellable implements Cancellable{
+        private Future<?> future;
+
+        public FutureCancellable(Future<?> future) {
+            this.future = future;
+        }
+
+        @Override
+        public void cancel() {
+        future.cancel(true);
+        }
     }
 }

@@ -3,11 +3,17 @@ package com.example.randomgallery.spacexdataviewer;
 import android.app.Application;
 
 import androidx.lifecycle.ViewModelProvider;
+import androidx.room.Room;
 
 import com.example.randomgallery.spacexdataviewer.logger.AndroidLogger;
 import com.example.randomgallery.spacexdataviewer.logger.Logger;
 import com.example.randomgallery.spacexdataviewer.model.SpaceXService;
+import com.example.randomgallery.spacexdataviewer.model.db.AppDatabase;
+import com.example.randomgallery.spacexdataviewer.model.db.LaunchDao;
 import com.example.randomgallery.spacexdataviewer.model.network.SpaceXAPI;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -40,7 +46,14 @@ public class App extends Application {
 
         SpaceXAPI spaceXAPI = retrofit.create(SpaceXAPI.class);
 
-        SpaceXService spaceXService = new SpaceXService(spaceXAPI,logger);
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
+        AppDatabase appDatabase = Room.databaseBuilder(this, AppDatabase.class, "database.db")
+                .build();
+
+        LaunchDao launchDao = appDatabase.getLaunchDao();
+
+        SpaceXService spaceXService = new SpaceXService(spaceXAPI,launchDao, executorService,logger);
         viewModelFactory = new ViewModelFactory(spaceXService);
     }
 
