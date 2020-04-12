@@ -1,9 +1,11 @@
 package com.example.randomgallery.spacexdataviewer.model.network;
 
+import java.util.Date;
+
 public class LaunchNetworkEntity {
     private  long flight_number;
     private  String mission_name;
-    private  String launch_date_utc;
+    private  Date launch_date_utc;
     private  String details;
 
     public long getFlight_number() {
@@ -14,7 +16,7 @@ public class LaunchNetworkEntity {
         return mission_name;
     }
 
-    public String getLaunch_date_utc() {
+    public Date getLaunch_date_utc() {
         return launch_date_utc;
     }
 

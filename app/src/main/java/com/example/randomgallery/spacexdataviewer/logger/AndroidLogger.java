@@ -10,4 +10,6 @@ public class AndroidLogger implements Logger {
     public void e(Throwable e) {
         Log.e(TAG, "Error!",e );
     }
+
+
 }

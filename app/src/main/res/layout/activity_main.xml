@@ -16,19 +16,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-<!--    <EditText-->
-<!--        android:id="@+id/launchEditText"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:imeOptions="actionSearch"-->
-<!--        android:lines="1"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/searchButton"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/searchButton"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/searchButton"-->
-<!--        />-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/launchesList"
         android:layout_width="0dp"

@@ -2,13 +2,17 @@ package com.example.randomgallery.spacexdataviewer.model;
 
 import com.example.randomgallery.spacexdataviewer.model.network.LaunchNetworkEntity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Launch {
     private final long flightNumber;
     private final String missionName;
-    private final String launchDate;
+    private final Date launchDate;
     private final String details;
 
-    public Launch(long flightNumber, String missionName, String launchDate, String details) {
+    public Launch(long flightNumber, String missionName, Date launchDate, String details) {
         this.flightNumber = flightNumber;
         this.missionName = missionName;
         this.launchDate = launchDate;
@@ -33,7 +37,10 @@ public class Launch {
     }
 
     public String getLaunchDate() {
-        return launchDate;
+        String pattern = "MM/dd/yyyy";
+        DateFormat df = new SimpleDateFormat(pattern);
+        String dateAsString = df.format(launchDate);
+        return dateAsString;
     }
 
     public String getDetails() {
